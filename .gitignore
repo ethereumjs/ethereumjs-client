@@ -68,8 +68,8 @@ node_modules
 package-lock.json
 
 # ChainDB folder
-chaindb
+chaindb/*
+!chaindb/.placeholder
 
 # Build folder
 dist
-
