@@ -1,7 +1,5 @@
-const tape = require('tape-catch')
-const td = require('testdouble')
-const { defaultLogger } = require('../../../lib/logging')
-defaultLogger.silent = true
+const tape = require('tape-catch');
+const td = require('testdouble');
 
 tape('[Libp2pPeer]', t => {
   const PeerInfo = td.replace('peer-info')

@@ -1,6 +1,6 @@
 'use strict'
 
-const { Server } = require('../../../lib/net/server')
+const Server = require('../../../lib/net/server/rlpxserver');
 const MockPeer = require('./mockpeer')
 const network = require('./network')
 

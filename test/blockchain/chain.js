@@ -2,15 +2,8 @@ const tape = require('tape')
 const Block = require('ethereumjs-block')
 const util = require('ethereumjs-util')
 const { Chain } = require('../../lib/blockchain')
-const { defaultLogger } = require('../../lib/logging')
-defaultLogger.silent = true
 
 tape('[Chain]', t => {
-  t.test('should test object creation without logger', t => {
-    t.equal(new Chain().logger, defaultLogger)
-
-    t.end()
-  })
 
   t.test('should test blockchain DB is initialized', t => {
     const chain = new Chain() // eslint-disable-line no-new

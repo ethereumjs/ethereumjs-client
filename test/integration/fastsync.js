@@ -4,8 +4,6 @@ const tape = require('tape')
 const { FastEthereumService } = require('../../lib/service')
 const MockServer = require('./mocks/mockserver.js')
 const MockChain = require('./mocks/mockchain.js')
-const { defaultLogger } = require('../../lib/logging')
-defaultLogger.silent = true
 
 async function wait (delay) {
   await new Promise(resolve => setTimeout(resolve, delay))

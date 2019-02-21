@@ -2,8 +2,6 @@ const tape = require('tape-catch')
 const td = require('testdouble')
 // const BN = require('bn.js')
 const EventEmitter = require('events')
-const { defaultLogger } = require('../../../lib/logging')
-defaultLogger.silent = true
 
 tape('[HeaderFetcher]', t => {
   class PeerPool extends EventEmitter {}

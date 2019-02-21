@@ -13,12 +13,10 @@
   "scripts": {
     "coverage": "nyc npm run test && nyc report --reporter=text-lcov > .nyc_output/lcov.info",
     "coveralls": "npm run coverage && coveralls <.nyc_output/lcov.info",
-    "docs": "jsdoc2md --no-cache -c .jsdoc.json lib/*.js > docs/API.md",
-    "lint": "standard",
     "lint:fix": "standard --fix",
     "unit": "tape 'test/!(integration)/**/*.js'",
     "integration": "tape 'test/integration/**/*.js'",
-    "test": "npm run lint && npm run unit && npm run integration",
+    "test": "npm run unit && npm run integration",
     "build": "npm run test && browserify browser/index.js -s ethereumjs -t babelify --outfile dist/bundle.js"
   },
   "browser": {
@@ -87,7 +85,6 @@
     "browserify": "^16.2.3",
     "coveralls": "^3.0.0",
     "json-to-markdown": "^1.0.4",
-    "level-browserify": "^2.0.0",
     "nyc": "~11.6.0",
     "pino": "^5.8.0",
     "pino-pretty": "^2.2.2",

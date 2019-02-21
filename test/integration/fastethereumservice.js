@@ -5,8 +5,6 @@ const { FastEthereumService } = require('../../lib/service')
 const MockServer = require('./mocks/mockserver.js')
 const MockChain = require('./mocks/mockchain.js')
 const BN = require('bn.js')
-const { defaultLogger } = require('../../lib/logging')
-defaultLogger.silent = true
 
 tape('[Integration:FastEthereumService]', async (t) => {
   async function setup () {

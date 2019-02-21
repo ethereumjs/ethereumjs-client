@@ -3,8 +3,6 @@ const { EthProtocol } = require('../../lib/net/protocol')
 const PeerPool = require('../../lib/net/peerpool')
 const MockServer = require('./mocks/mockserver.js')
 const MockChain = require('./mocks/mockchain.js')
-const { defaultLogger } = require('../../lib/logging')
-defaultLogger.silent = true
 
 tape('[Integration:PeerPool]', async (t) => {
   async function setup (protocols = []) {

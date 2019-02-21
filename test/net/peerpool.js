@@ -1,8 +1,6 @@
 const tape = require('tape-catch')
 const td = require('testdouble')
 const EventEmitter = require('events')
-const { defaultLogger } = require('../../lib/logging')
-defaultLogger.silent = true
 
 tape('[PeerPool]', t => {
   const Peer = td.replace('../../lib/net/peer/peer', function (id) { this.id = id })

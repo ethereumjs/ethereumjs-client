@@ -2,8 +2,6 @@ const tape = require('tape-catch')
 const td = require('testdouble')
 const BN = require('bn.js')
 const EventEmitter = require('events')
-const { defaultLogger } = require('../../../lib/logging')
-defaultLogger.silent = true
 
 async function wait (delay) {
   await new Promise(resolve => setTimeout(resolve, delay || 10))

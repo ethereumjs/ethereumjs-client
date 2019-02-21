@@ -1,8 +1,6 @@
 const tape = require('tape')
 const Node = require('../../lib/node')
 const MockServer = require('./mocks/mockserver.js')
-const { defaultLogger } = require('../../lib/logging')
-defaultLogger.silent = true
 
 tape('[Integration:Node]', t => {
   const node = new Node({

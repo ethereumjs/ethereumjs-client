@@ -1,7 +1,5 @@
 const tape = require('tape-catch')
 const td = require('testdouble')
-const { defaultLogger } = require('../../../lib/logging')
-defaultLogger.silent = true
 
 tape('[Fetcher]', t => {
   const Fetcher = require('../../../lib/sync/fetcher/fetcher')

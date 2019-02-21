@@ -1,8 +1,6 @@
 const tape = require('tape-catch')
 const td = require('testdouble')
-const EventEmitter = require('events')
-const { defaultLogger } = require('../../../lib/logging')
-defaultLogger.silent = true
+const EventEmitter = require('events');
 
 tape('[RlpxServer]', t => {
   class RlpxPeer extends EventEmitter {}
@@ -22,7 +20,6 @@ tape('[RlpxServer]', t => {
       bootnodes: '10.0.0.1:1234,enode://abcd@10.0.0.2:1234',
       key: 'abcd'
     })
-    t.equals(server.name, 'rlpx', 'get name')
     t.ok(server.key.equals(Buffer.from('abcd', 'hex')), 'key parse')
     t.deepEquals(server.bootnodes, [{
       ip: '10.0.0.1', port: '1234'
@@ -105,7 +102,7 @@ tape('[RlpxServer]', t => {
     server.on('connected', peer => t.ok(peer instanceof RlpxPeer, 'connected'))
     server.on('disconnected', peer => t.equals(peer.id, '01', 'disconnected'))
     server.on('error', err => t.equals(err, 'err0', 'got error'))
-    server.on('listening', info => t.deepEquals(info, {transport: 'rlpx', url: 'enode://ff@[::]:30303'}, 'listening'))
+    server.on('listening', info => t.deepEquals(info, {url: 'enode://ff@[::]:30303'}, 'listening'))
     server.rlpx.emit('peer:added', rlpxPeer)
     server.peers.set('01', {id: '01'})
     server.rlpx.emit('peer:removed', rlpxPeer)
