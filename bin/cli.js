@@ -55,7 +55,6 @@ async function run () {
   const networkDirName = args.network === 'mainnet' ? '' : `${args.network}/`;
   const chainParams = args.params ? await parse.params(args.params) : args.network
   const common = new Common(chainParams)
-  const servers = [ new RlpxServer({ port: 30303 }) ];
   const dataDir = `${args.datadir}/${networkDirName}ethereumjs/${syncDirName}`
 
   fs.ensureDirSync(dataDir)
@@ -63,17 +62,9 @@ async function run () {
 
   const options = {
     common,
-    servers,
     db: level(dataDir)
   }
   const node = await runNode(options)
-
-  process.on('SIGINT', async () => {
-    if (server) await server.stop()
-    await node.stop()
-    console.log('Exiting.')
-    process.exit()
-  })
-}
+ }
 
 run().catch(err => console.error(err))

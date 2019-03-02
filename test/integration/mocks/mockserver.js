@@ -6,44 +6,44 @@ const network = require('./network')
 
 class MockServer extends Server {
   constructor (options = {}) {
-    super(options)
-    this.location = options.location || '127.0.0.1'
-    this.server = null
-    this.peers = {}
+    super(options);
+    this.location = options.location || '127.0.0.1';
+    this.server = null;
+    this.peers = {};
   }
 
   get name () {
-    return 'mock'
+    return 'mock';
   }
 
   async start () {
     if (this.started) {
       return
     }
-    super.start()
-    await this.wait(1)
+    await super.start();
+
     if (this.location) {
-      this.server = network.createServer(this.location)
+      this.server = network.createServer(this.location);
       this.server.on('listening', () => {
         this.emit('listening', {
-          transport: this.name,
           url: `mock://${this.location}`
-        })
-      })
+        });
+      });
     }
     this.server.on('connection', connection => {
-      this.connect(connection)
+      this.connect(connection);
     })
   }
 
   async stop () {
-    await new Promise(resolve => {
+    return new Promise(resolve => {
       setTimeout(() => {
-        network.destroyServer(this.location)
-        resolve()
-      }, 20)
-    })
-    await super.stop()
+        network.destroyServer(this.location);
+        super.stop();
+        console.log('destroyed!');
+        resolve();
+      }, 20);
+    });
   }
 
   async discover (id, location) {
@@ -71,10 +71,6 @@ class MockServer extends Server {
   disconnect (id) {
     const peer = this.peers[id]
     if (peer) this.emit('disconnected', peer)
-  }
-
-  async wait (delay) {
-    await new Promise(resolve => setTimeout(resolve, delay || 100))
   }
 }
 
