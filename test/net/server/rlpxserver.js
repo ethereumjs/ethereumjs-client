@@ -78,7 +78,7 @@ tape('[RlpxServer]', t => {
       id: mockId,
       ip: '::',
       listenAddr: '[::]:30303',
-      ports: { discovery: 30303, listener: 30303 },
+      ports: { discovery: 30303, listener: 30303 }
     }, 'get nodeInfo')
     await server.stop()
     t.end()
