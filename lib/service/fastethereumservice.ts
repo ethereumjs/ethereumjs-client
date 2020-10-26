@@ -4,6 +4,7 @@ import { EthProtocol } from '../net/protocol/ethprotocol'
 import { LesProtocol } from '../net/protocol/lesprotocol'
 import { Peer } from '../net/peer/peer'
 import { BoundProtocol } from '../net/protocol'
+import { ServiceOptions } from '../types'
 
 const defaultOptions = {
   lightserv: false,
@@ -27,7 +28,7 @@ export class FastEthereumService extends EthereumService {
    * @param {number}   [options.interval] sync retry interval
    * @param {Logger}   [options.logger] logger instance
    */
-  constructor(options?: any) {
+  constructor(options?: ServiceOptions) {
     super(options)
     options = { ...defaultOptions, ...options }
     this.lightserv = options.lightserv

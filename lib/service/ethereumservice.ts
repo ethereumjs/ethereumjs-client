@@ -2,6 +2,7 @@ import { Service } from './service'
 import { FlowControl } from '../net/protocol/flowcontrol'
 import { Chain } from '../blockchain'
 import Common from 'ethereumjs-common'
+import { NodeOptions, ServiceOptions } from '../types'
 
 const defaultOptions = {
   lightserv: false,
@@ -37,16 +38,16 @@ export class EthereumService extends Service {
    * @param {number}   [options.interval] sync retry interval
    * @param {Logger}   [options.logger] logger instance
    */
-  constructor(options?: any) {
+  constructor(options?: ServiceOptions) {
     options = { ...defaultOptions, ...options }
     super(options)
 
     this.flow = new FlowControl(options)
     this.chain = options.chain || new Chain(options)
-    this.common = options.common
-    this.minPeers = options.minPeers
-    this.interval = options.interval
-    this.timeout = options.timeout
+    this.common = options.common!
+    this.minPeers = options.minPeers!
+    this.interval = options.interval!
+    this.timeout = options.timeout!
     this.synchronizer = null
   }
 

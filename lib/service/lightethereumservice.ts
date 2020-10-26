@@ -2,6 +2,7 @@ import { EthereumService } from './ethereumservice'
 import { Peer } from '../net/peer/peer'
 import { LightSynchronizer } from '../sync/lightsync'
 import { LesProtocol } from '../net/protocol/lesprotocol'
+import { ServiceOptions } from '../types'
 
 /**
  * Ethereum service
@@ -19,7 +20,7 @@ export class LightEthereumService extends EthereumService {
    * @param {number}   [options.interval] sync retry interval
    * @param {Logger}   [options.logger] logger instance
    */
-  constructor(options?: any) {
+  constructor(options?: ServiceOptions) {
     super(options)
     this.init()
   }

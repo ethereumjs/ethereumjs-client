@@ -2,6 +2,9 @@ import * as events from 'events'
 import { PeerPool } from '../net/peerpool'
 import { defaultLogger } from '../logging'
 import { Peer } from '../net/peer/peer'
+import { Server } from '../net/server'
+import { NodeOptions, ServiceOptions } from '../types'
+import { Logger } from 'winston'
 
 const defaultOptions = {
   maxPeers: 25,
@@ -14,11 +17,11 @@ const defaultOptions = {
  * @memberof module:service
  */
 export class Service extends events.EventEmitter {
-  public logger: any
+  public logger: Logger
   public opened: boolean
   public running: boolean
-  public servers: any
-  public pool: any
+  public servers: Server[]
+  public pool: PeerPool
 
   /**
    * Create new service and associated peer pool
@@ -27,14 +30,14 @@ export class Service extends events.EventEmitter {
    * @param {number}     [options.maxPeers=25] maximum peers allowed
    * @param {Logger}     [options.logger] logger instance
    */
-  constructor(options?: any) {
+  constructor(options?: ServiceOptions) {
     super()
     options = { ...defaultOptions, ...options }
 
-    this.logger = options.logger
+    this.logger = options.logger!
     this.opened = false
     this.running = false
-    this.servers = options.servers
+    this.servers = options.servers!
     this.pool = new PeerPool({
       logger: this.logger,
       servers: this.servers,
