@@ -1,17 +1,20 @@
 #!/usr/bin/env node
 
-const Common = require('ethereumjs-common').default
-const chains = require('ethereumjs-common/dist/chains').chains
-const { getLogger } = require('../lib/logging')
-const { parseParams, parseTransports } = require('../lib/util')
-const { fromName: serverFromName } = require('../lib/net/server')
-import Node from '../lib/node'
 import { Server as RPCServer } from 'jayson'
-const RPCManager = require('../lib/rpc')
 const level = require('level')
-const os = require('os')
+import os = require('os')
 const path = require('path')
 const fs = require('fs-extra')
+
+import Common from'ethereumjs-common'
+const chains = require('ethereumjs-common/dist/chains').chains
+
+import { getLogger } from '../lib/logging'
+import { parseParams, parseTransports } from '../lib/util'
+import { Libp2pServer, RlpxServer, Server } from '../lib/net/server'
+import Node from '../lib/node'
+import { NodeOptions } from '../lib/types'
+import { RPCManager } from '../lib/rpc'
 
 const networks = Object.entries(chains.names)
 const args = require('yargs')
@@ -82,7 +85,7 @@ const args = require('yargs')
   .locale('en_EN').argv
 const logger = getLogger({ loglevel: args.loglevel })
 
-async function runNode(options: any) {
+async function runNode(options: NodeOptions) {
   logger.info('Initializing Ethereumjs client...')
   if (options.lightserv) {
     logger.info(`Serving light peer requests`)
@@ -95,7 +98,7 @@ async function runNode(options: any) {
   node.on('synchronized', () => {
     logger.info('Synchronized')
   })
-  logger.info(`Connecting to network: ${options.common.chainName()}`)
+  logger.info(`Connecting to network: ${options.common!.chainName()}`)
   await node.open()
   logger.info('Synchronizing blockchain...')
   await node.start()
@@ -128,19 +131,20 @@ async function run() {
   // hardfork awareness is implemented within the library
   // Also a fix for https://github.com/ethereumjs/ethereumjs-vm/issues/757
   const common = new Common(chainParams, 'chainstart')
-  const servers = parseTransports(args.transports).map((t: any) => {
-    const Server = serverFromName(t.name)
+  const servers: Server[] = parseTransports(args.transports).map((t) => {
     if (t.name === 'rlpx') {
       t.options.bootnodes = t.options.bootnodes || common.bootstrapNodes()
+      return new RlpxServer({ logger, ...t.options })
+    } else {
+      return new Libp2pServer({ logger, ...t.options })
     }
-    return new Server({ logger, ...t.options })
   })
   const dataDir = `${args.datadir}/${networkDirName}ethereumjs/${syncDirName}`
 
   fs.ensureDirSync(dataDir)
   logger.info(`Data directory: ${dataDir}`)
 
-  const options = {
+  const options: NodeOptions = {
     common,
     logger,
     servers,

@@ -8,12 +8,3 @@ import { Libp2pServer } from './libp2pserver'
 /**
  * @module net/server
  */
-
-const servers: any = {
-  rlpx: RlpxServer,
-  libp2p: Libp2pServer,
-}
-
-export const fromName = function (name: string) {
-  return servers[name]
-}

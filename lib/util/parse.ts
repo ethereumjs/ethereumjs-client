@@ -1,11 +1,11 @@
 import Account from 'ethereumjs-account'
 const Block = require('ethereumjs-block')
 const Trie = require('merkle-patricia-tree/secure')
-import * as util from 'ethereumjs-util'
+import { BN, keccak, rlp, stripHexPrefix, unpadBuffer } from 'ethereumjs-util'
 import * as url from 'url'
 
 function toBuffer(string: string) {
-  return Buffer.from(util.stripHexPrefix(string), 'hex')
+  return Buffer.from(stripHexPrefix(string), 'hex')
 }
 
 export function parseBootnodes(string: string) {
@@ -26,15 +26,15 @@ export function parseBootnodes(string: string) {
   }
 }
 
-export function parseTransports(transports: any[]) {
+export function parseTransports(transports: string[]) {
   return transports.map((t) => {
-    const options: any = {}
+    const options: { [key: string]: string } = {}
     const [name, ...pairs] = t.split(':')
     if (pairs.length) {
       pairs
         .join(':')
         .split(',')
-        .forEach((p: any) => {
+        .forEach((p: string) => {
           const [key, value] = p.split('=')
           options[key] = value
         })
@@ -48,7 +48,7 @@ async function parseStorage(storage: any) {
   const promises = []
   // eslint-disable-next-line prefer-const
   for (let [address, value] of Object.entries(storage)) {
-    value = util.rlp.encode(util.unpadBuffer(toBuffer(value as string)))
+    value = rlp.encode(unpadBuffer(toBuffer(value as string)))
     promises.push(
       new Promise((resolve, reject) => {
         trie.put(toBuffer(address), value, (err: Error) => {
@@ -71,10 +71,10 @@ async function parseGethState(alloc: any) {
     if ((value as any).balance) {
       // TODO: convert to buffer w/ util.toBuffer()?
       // @ts-ignore: account.balance is type Buffer, not BN
-      account.balance = new util.BN((value as any).balance.slice(2), 16)
+      account.balance = new BN((value as any).balance.slice(2), 16)
     }
     if ((value as any).code) {
-      account.codeHash = util.keccak(util.toBuffer((value as any).code))
+      account.codeHash = keccak(toBuffer((value as any).code))
     }
     if ((value as any).storage) {
       account.stateRoot = (await parseStorage((value as any).storage)).root

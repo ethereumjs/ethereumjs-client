@@ -1,6 +1,8 @@
 import tape from 'tape-catch'
 const td = require('testdouble')
 const EventEmitter = require('events')
+import Node from '../lib/node'
+import { Server } from '../lib/net/server'
 const { defaultLogger } = require('../lib/logging')
 defaultLogger.silent = true
 
@@ -13,14 +15,13 @@ tape('[Node]', (t) => {
   td.when(EthereumService.prototype.start()).thenResolve()
   td.when(EthereumService.prototype.stop()).thenResolve()
   td.replace('../lib/service', { EthereumService })
-  class Server extends EventEmitter {}
-  Server.prototype.open = td.func()
-  Server.prototype.start = td.func()
-  Server.prototype.stop = td.func()
-  td.when(Server.prototype.start()).thenResolve()
-  td.when(Server.prototype.stop()).thenResolve()
-  td.replace('../lib/net/server/server', Server)
-  const Node = require('../lib/node')
+  class MockServer extends EventEmitter {}
+  MockServer.prototype.open = td.func()
+  MockServer.prototype.start = td.func()
+  MockServer.prototype.stop = td.func()
+  td.when(MockServer.prototype.start()).thenResolve()
+  td.when(MockServer.prototype.stop()).thenResolve()
+  td.replace('../lib/net/server/server', MockServer)
 
   t.test('should initialize correctly', (t) => {
     const node = new Node()
@@ -30,7 +31,7 @@ tape('[Node]', (t) => {
 
   t.test('should open', async (t) => {
     t.plan(6)
-    const servers = [new Server()]
+    const servers = [new MockServer() as Server]
     const node = new Node({ servers })
     node.on('error', (err: string) => {
       if (err === 'err0') t.pass('got err0')
@@ -48,7 +49,7 @@ tape('[Node]', (t) => {
   })
 
   t.test('should start/stop', async (t) => {
-    const servers = [new Server()]
+    const servers = [new MockServer() as Server]
     const node = new Node({ servers })
     await node.start()
     t.ok(node.started, 'started')

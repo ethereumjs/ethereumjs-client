@@ -1,6 +1,11 @@
 import * as events from 'events'
-import { FastEthereumService, LightEthereumService } from './service'
+import { Logger } from 'winston'
+import Common from 'ethereumjs-common'
+import { Server } from './net/server'
+import { FastEthereumService, LightEthereumService, Service } from './service'
 import { defaultLogger } from './logging'
+import { NodeOptions } from './types'
+
 
 const defaultOptions = {
   minPeers: 3,
@@ -15,11 +20,11 @@ const defaultOptions = {
  * @memberof module:node
  */
 export default class Node extends events.EventEmitter {
-  public logger: any
-  public common: any
-  public servers: any
-  public syncmode: any
-  public services: any
+  public logger: Logger
+  public common: Common
+  public servers: Server[]
+  public syncmode: string
+  public services: Service[]
 
   public opened: boolean
   public started: boolean
@@ -39,14 +44,14 @@ export default class Node extends events.EventEmitter {
    * @param {string[]} [options.clientFilter] list of supported clients
    * @param {number}   [options.refreshInterval] how often to discover new peers
    */
-  constructor(options: any) {
+  constructor(options?: NodeOptions) {
     super()
     options = { ...defaultOptions, ...options }
 
-    this.logger = options.logger
-    this.common = options.common
-    this.servers = options.servers
-    this.syncmode = options.syncmode
+    this.logger = options.logger!
+    this.common = options.common!
+    this.servers = options.servers!
+    this.syncmode = options.syncmode!
     this.services = [
       this.syncmode === 'fast'
         ? new FastEthereumService({

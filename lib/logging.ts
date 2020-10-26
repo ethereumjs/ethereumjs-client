@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { createLogger, format, transports } from 'winston'
+import { createLogger, format, Logger, transports } from 'winston'
 const { combine, timestamp, label, printf } = format
 
 const levelColors: any = {
