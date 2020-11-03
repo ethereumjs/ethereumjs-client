@@ -5,7 +5,7 @@
 [![Coverage Status][coverage-badge]][coverage-link]
 [![Discord][discord-badge]][discord-link]
 
-This is the work repository for the EthereumJS client project targeting both Node.js and the browser as a platform.
+This is the work repository for the EthereumJS client project targeting both Node.js and the browser.
 
 See [Technical Guidelines](#technical-guidelines) to dive directly into development info.
 
@@ -31,8 +31,7 @@ For the `ethereumjs` CLI command to work run:
 npm link
 ```
 
-Note: for development purposes you can invoke the client by build with `npm run build:node` and 
-then run `node ./dist/bin/cli.js`.
+Note: for development purposes you can invoke the client with `npm run client:start`
 
 **Running the Client**
 
@@ -44,7 +43,7 @@ You can run the current state of the client with:
 ethereumjs --network=mainnet [--loglevel=debug]
 ```
 
-For development you might want to connect to `rinkeby` as the network with the currently 
+For development you might want to connect to `rinkeby` as the network with the currently
 most reliable connection:
 
 ```shell
