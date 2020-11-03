@@ -7,15 +7,25 @@ const { fromName: serverFromName } = require('../lib/net/server')
 import Node from '../lib/node'
 import { Server as RPCServer } from 'jayson'
 import { Config } from '../lib/config'
+import {Logger} from 'winston'
 const RPCManager = require('../lib/rpc')
 const level = require('level')
 const os = require('os')
 const path = require('path')
 const fs = require('fs-extra')
+const yargs = require('yargs')
+
+type UserConfig = {
+  logger? : Logger
+}
 
 const networks = Object.entries(chains.names)
-const args = require('yargs')
+const args = yargs
   .options({
+    config: {
+      describe: 'Path to ethereumjs.config.js',
+      default: undefined,
+    },
     network: {
       describe: `Network`,
       choices: networks.map((n) => n[1]),
@@ -80,7 +90,18 @@ const args = require('yargs')
     },
   })
   .locale('en_EN').argv
-const logger = getLogger({ loglevel: args.loglevel })
+
+const config: UserConfig = {}
+
+if (args.config) {
+  const userConfig: UserConfig = <UserConfig>require(
+    path.resolve(process.cwd(), args.config)
+  )
+
+  Object.assign(config, userConfig)
+}
+
+const logger = config.logger ?? getLogger({ loglevel: args.loglevel })
 
 async function runNode(options: any) {
   logger.info('Initializing Ethereumjs client...')
@@ -153,21 +174,24 @@ async function run() {
     minPeers: args.minPeers,
     maxPeers: args.maxPeers,
   }
-  const node = await runNode(options)
-  const server = args.rpc ? runRpcServer(node, options) : null
+
+  let node: Node|null
+  let server: RPCServer|null
 
   process.once('SIGINT', async () => {
     process.once('SIGINT', () => {
       logger.info('Force shutdown. Exit immediately.')
       process.exit(1)
     })
-
     logger.info('Caught interrupt signal. Shutting down...')
     if (server) server.http().close()
-    await node.stop()
+    if (node) await node.stop()
     logger.info('Exiting.')
-    process.exit()
+    process.exit(0)
   })
+
+  node = await runNode(options)
+  server = args.rpc ? runRpcServer(node, options) : null
 }
 
 run().catch((err) => logger.error(err))
