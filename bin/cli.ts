@@ -156,7 +156,12 @@ async function run() {
   const node = await runNode(options)
   const server = args.rpc ? runRpcServer(node, options) : null
 
-  process.on('SIGINT', async () => {
+  process.once('SIGINT', async () => {
+    process.once('SIGINT', () => {
+      logger.info('Force shutdown. Exit immediately.')
+      process.exit(1)
+    })
+
     logger.info('Caught interrupt signal. Shutting down...')
     if (server) server.http().close()
     await node.stop()
