@@ -7,13 +7,11 @@ tape('[CLI]', (t) => {
   t.test('should handle SIGINT', { timeout: 160000 }, (t) => {
     t.plan(1)
     const file = require.resolve('../../dist/bin/cli.js')
-    const child = spawn(process.execPath, [
-      file,
-      '--config',
-      path.join(__dirname, '/fixtures/ethereumjs.config.js')
-    ], {
-      stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
-    })
+    const child = spawn(
+      process.execPath,
+      [file, '--config', path.join(__dirname, '/fixtures/ethereumjs.config.js')],
+      { stdio: ['pipe', 'pipe', 'pipe', 'ipc'] }
+    )
 
     const timeout = setTimeout(() => {
       child.kill('SIGINT')
@@ -25,28 +23,30 @@ tape('[CLI]', (t) => {
       t.end()
     }
 
-    function onServiceStarted([level, message]: [string, string]) {
-      if (level === 'info') {
-        if (message === 'Started eth service.') {
-          child.removeListener('message', onServiceStarted)
-          child.on('message', onFirstSigintSent)
-          child.kill('SIGINT')
-        }
-      }
-    }
-
-    function onFirstSigintSent([level, message]: [string, string]) {
+    function onSigintSent([level, message]: [string, string]) {
       if (level === 'info') {
         if (message === 'Exiting.') {
-          child.removeListener('message', onFirstSigintSent)
+          child.removeListener('message', onSigintSent)
           t.pass('Client exited')
           clearTimeout(timeout)
         }
       }
     }
 
+    function onServiceStarted([level, message]: [string, string]) {
+      if (level === 'info') {
+        if (message === 'Started eth service.') {
+          child.removeListener('message', onServiceStarted)
+          child.on('message', onSigintSent)
+          child.kill('SIGINT')
+        }
+      }
+    }
+
     child.on('message', onServiceStarted)
-    child.on('message', ([level, message]: [string, string]) => console.log(level, message))
+    child.on('message', ([level, message]: [string, string]) => {
+      process.stdout.write(`${level}: ${message}\n`)
+    })
 
     child.on('error', (error) => {
       t.fail(`Error: ${error}`)

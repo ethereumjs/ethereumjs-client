@@ -8,5 +8,5 @@ module.exports = {
     info: send.bind(null, 'info'),
     debug: send.bind(null, 'debug'),
     error: send.bind(null, 'error'),
-  }
+  },
 }

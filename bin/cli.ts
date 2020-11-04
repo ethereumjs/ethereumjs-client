@@ -7,7 +7,7 @@ const { fromName: serverFromName } = require('../lib/net/server')
 import Node from '../lib/node'
 import { Server as RPCServer } from 'jayson'
 import { Config } from '../lib/config'
-import {Logger} from 'winston'
+import { Logger } from 'winston'
 const RPCManager = require('../lib/rpc')
 const level = require('level')
 const os = require('os')
@@ -16,7 +16,7 @@ const fs = require('fs-extra')
 const yargs = require('yargs')
 
 type UserConfig = {
-  logger? : Logger
+  logger?: Logger
 }
 
 const networks = Object.entries(chains.names)
@@ -94,9 +94,7 @@ const args = yargs
 const config: UserConfig = {}
 
 if (args.config) {
-  const userConfig: UserConfig = <UserConfig>require(
-    path.resolve(process.cwd(), args.config)
-  )
+  const userConfig: UserConfig = <UserConfig>require(path.resolve(process.cwd(), args.config))
 
   Object.assign(config, userConfig)
 }
@@ -175,8 +173,8 @@ async function run() {
     maxPeers: args.maxPeers,
   }
 
-  let node: Node|null
-  let server: RPCServer|null
+  let node: Node | null
+  let server: RPCServer | null
 
   process.once('SIGINT', async () => {
     process.once('SIGINT', () => {
@@ -184,8 +182,14 @@ async function run() {
       process.exit(1)
     })
     logger.info('Caught interrupt signal. Shutting down...')
-    if (server) server.http().close()
-    if (node) await node.stop()
+    if (server) {
+      server.http().close()
+      server = null
+    }
+    if (node) {
+      await node.stop()
+      node = null
+    }
     logger.info('Exiting.')
     process.exit(0)
   })
