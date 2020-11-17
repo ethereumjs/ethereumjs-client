@@ -4,7 +4,7 @@ import Blockchain from '@ethereumjs/blockchain'
 import { BN, toBuffer } from 'ethereumjs-util'
 import type { LevelUp } from 'levelup'
 import { Config } from '../config'
-
+import VM from '@ethereumjs/vm'
 /**
  * The options that the Blockchain constructor can receive.
  */
@@ -82,6 +82,7 @@ export class Chain extends EventEmitter {
   public db: LevelUp
   public blockchain: Blockchain
   public opened: boolean
+  public vm: VM
 
   private _headers: ChainHeaders = {
     latest: null,
@@ -109,11 +110,15 @@ export class Chain extends EventEmitter {
       new Blockchain({
         db: options.db,
         common: this.config.common,
-        validateBlocks: false,
-        validateConsensus: false,
+        validateBlocks: true,
+        validateConsensus: true,
       })
 
     this.db = this.blockchain.db
+    this.vm = new VM({
+      blockchain: this.blockchain,
+      common: this.config.common, 
+    })
     this.opened = false
   }
 
