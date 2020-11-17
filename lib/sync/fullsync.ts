@@ -4,17 +4,27 @@ import { BoundProtocol } from '../net/protocol'
 import { short } from '../util'
 import { Synchronizer, SynchronizerOptions } from './sync'
 import { BlockFetcher } from './fetcher'
+import { Block } from '@ethereumjs/block'
+import { RunBlockResult } from '@ethereumjs/vm/dist/runBlock'
 
 /**
- * Implements an ethereum fast sync synchronizer
+ * Implements an ethereum full sync synchronizer
  * @memberof module:sync
  */
-export class FastSynchronizer extends Synchronizer {
+export class FullSynchronizer extends Synchronizer {
   private blockFetcher: BlockFetcher | null
 
   constructor(options: SynchronizerOptions) {
     super(options)
     this.blockFetcher = null
+    options.chain.vm.on('beforeBlock', function(block: Block) {
+      options.config.logger.info("Running block: " + block.header.number.toString())
+    })
+    // TODO: we don't know which block 
+    options.chain.vm.on('afterBlock', function(blockResults: RunBlockResult){
+      options.config.logger.info("Succesfully ran block.")
+    })
+    options.chain.vm.runBlockchain()
   }
 
   /**
@@ -22,7 +32,7 @@ export class FastSynchronizer extends Synchronizer {
    * @return {string} type
    */
   get type(): string {
-    return 'fast'
+    return 'full'
   }
 
   /**
@@ -107,19 +117,17 @@ export class FastSynchronizer extends Synchronizer {
             this.pool.size
           }`
         )
+        this.chain.vm.runBlockchain()
       })
     await this.blockFetcher.fetch()
     // TODO: Should this be deleted?
     // @ts-ignore: error: The operand of a 'delete' operator must be optional
     delete this.blockFetcher
     return true
-
-    // TO DO: Fetch state trie as well
   }
 
   /**
-   * Fetch all blocks from current height up to highest found amongst peers and
-   * fetch entire recent state trie
+   * Fetch all blocks from current height up to highest found amongst peers
    * @return Resolves with true if sync successful
    */
   async sync(): Promise<boolean> {
