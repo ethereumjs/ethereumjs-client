@@ -6,7 +6,7 @@
   "types": "dist/lib/index.d.ts",
   "browser": "dist/bundle.js",
   "bin": {
-    "ethereumjs": "bin/cli.js"
+    "ethereumjs": "dist/bin/cli.js"
   },
   "files": [
     "bin",
@@ -17,15 +17,16 @@
     "build:node": "tsc -p ./tsconfig.prod.json",
     "build:browser": "tsc -p ./tsconfig.browser.json && npm run bundle && rm -rf dist.browser",
     "bundle": "webpack",
-    "client:start": "tsc -p tsconfig.prod.json && node dist/bin/cli.js",
+    "client:start": "ts-node bin/cli.ts",
     "coverage": "nyc npm run test && nyc report --reporter=lcov",
     "docs:build": "typedoc --tsconfig tsconfig.prod.json",
     "lint": "ethereumjs-config-lint",
     "lint:fix": "ethereumjs-config-lint-fix",
     "tape": "tape -r ts-node/register",
     "test": "npm run test:unit && npm run test:integration",
-    "test:unit": "npm run tape -- 'test/!(integration)/**/*.spec.ts'",
+    "test:unit": "npm run tape -- 'test/!(integration|cli)/**/*.spec.ts'",
     "test:integration": "npm run tape -- 'test/integration/**/*.spec.ts'",
+    "test:cli": "npm run build:node && npm run tape -- 'test/cli/*.spec.ts'",
     "test:browser": "karma start karma.conf.js"
   },
   "husky": {
